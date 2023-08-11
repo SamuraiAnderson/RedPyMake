@@ -10,6 +10,14 @@ class UFile(object):
     def __init__(self, dev:BaseControl, path:str) -> None:
         self._dev = dev
         self._path = path
+        self._remote_old_pwd = None
+        self._exist = False
+        self.check_cache_right()
+        
+    def check_cache_right(self):
+        if self.RemoteUser.pwd != self._remote_old_pwd:
+            self._remote_old_pwd = self.RemoteUser.pwd
+            self._exist = self._is_exist()
 
     @property
     def path(self):
@@ -18,6 +26,11 @@ class UFile(object):
     @property
     def RemoteUser(self):
         return self._dev
+
+    @property
+    def exist(self):
+        self.check_cache_right()
+        return self._exist
 
     def get_abs_path(self):
         if self.is_absolute_path(self._path):
@@ -33,18 +46,27 @@ class UFile(object):
             return path.startswith('/') or path.startswith('~')
 
     def get_timestamp(self):
-        if self._dev.file_exist(self._path):
+        if self.exist:
             return self._dev.get_file_timestamp(self._path)
         else:
             return None
 
     def is_file(self):
-        pass
+        if self.RemoteUser.name == 'nt':
+            return os.path.isfile(self.path) # TODO:
+        else:
+            code, stdout, stderr = self.RemoteUser.shell(f"test -f {self.path}")
+            return stdout.strip() == 'true'
 
     def is_dir(self):
-        pass
+        if self.RemoteUser.name == 'nt':
+            return os.path.isdir(self.path) # TODO:
+        else:
+            code, stdout, stderr = self.RemoteUser.shell(f"test -d {self.path}")
+            return stdout.strip() == 'true'
 
-    def is_exist(self):
+
+    def _is_exist(self):
         return self._dev.file_exist(self._path)
 
     def __str__(self) -> str:

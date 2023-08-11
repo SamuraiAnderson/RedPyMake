@@ -8,7 +8,7 @@ class BaseControl(object):
     def pull(self, remote_path, local_path):
         raise NotImplementedError()
 
-    def shell(self, *args, **kwargs):
+    def shell(self, *args, **kwargs)->[int, str, str]:
         raise NotImplementedError()
 
     def pwd(self):

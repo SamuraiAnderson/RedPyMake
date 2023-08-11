@@ -45,7 +45,7 @@ class AdbCnet(BaseControl):
         return True
 
     # @shell_check_decorate
-    def shell(self, *args)->[bool, str]:
+    def shell(self, *args)->[int, str, str]:
         args = self.args_prefix + list(args)
         remote_cmd = args_to_cmd(args)
         cmd = ["adb", "shell", remote_cmd]
@@ -87,7 +87,4 @@ class AdbCnet(BaseControl):
 
     def file_exist(self, path):
         code, stdout, stderr = self.shell(f"test -e {path} && echo true || echo false")
-        stdout:str
         return stdout.strip() == "true"
-
-        

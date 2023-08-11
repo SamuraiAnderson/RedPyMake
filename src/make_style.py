@@ -15,7 +15,7 @@ def _get_target_timestamp(args:list): # get min
         if is_iterable(arg) and len(arg) > 0 and isinstance(arg[0], UFile):
             target_early = min(target_early, _get_target_timestamp(arg))
         elif isinstance(arg, UFile):
-            if arg.is_exist():
+            if arg.exist:
                 target_early = min(target_early, arg.get_timestamp())
             else:
                 target_early = 0
@@ -29,11 +29,11 @@ def _get_src_timestamp(args:list): # get min
         if is_iterable(arg) and len(arg) > 0 and isinstance(arg[0], UFile):
             src_last = max(src_last, _get_target_timestamp(arg))
         elif isinstance(arg, UFile):
-            if arg.is_exist():
+            if arg.exist:
                 src_last = max(src_last, arg.get_timestamp())
             else:
                 src_last = 0
-                raise FileNotFoundError(f"{arg} {arg.is_exist()} not found.")
+                raise FileNotFoundError(f"{arg} {arg.exist} not found.")
 
     return src_last
 

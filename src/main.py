@@ -210,14 +210,15 @@ def make_test():
     # translate .so
     linux.pwd = webrtc_path
     linux.shell("make", "-f", "Makefile.rv1106l")
-    cp(UFile(android, android_lib_path), UFile(linux, "./libwebrtc_core.so"))
+    webrtc_core = UFile(android, rf"{android_lib_path}/libwebrtc_core.so")
+    cp(UFile(android, android_lib_path), webrtc_core)
 
     linux.pwd = play_path
     linux.shell("./build_cmake.sh")
 
     @make_style_decorate
     def cp_exe(target:UFile, src:UFile):
-        ''' TODO:target may be is dir '''
+        ''' TODO:target may be dir '''
         cp(target, src)
         target.RemoteUser.shell(f"chmod 755 {target.path}")
 
@@ -244,7 +245,7 @@ def make_test():
         name = os.path.basename(mixed)
         rtc_name = rf"{name}_rtc.pcm"
         local_rtc_file = UFile(local, rtc_name)
-        webrtc_run(local_rtc_file, UFile(local, mixed), webrtc)
+        webrtc_run(local_rtc_file, UFile(local, mixed), webrtc, webrtc_core)
         similar_data.append([src, local_rtc_file]+list(count_mse(src, local_rtc_file.path)))
     
     write_to_csv(similar_data, rf"D:\Users\USER\Desktop\flowing\test_data\result_{time.time()}.csv")
